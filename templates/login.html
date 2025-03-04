@@ -222,17 +222,21 @@
                     method: 'POST',
                     body: formData
                 });
+                console.log("Server response status:", response.status); // دیباگ بیشتر
                 console.log("Server response:", await response.text()); // دیباگ بیشتر
                 const data = await response.json();
                 console.log("Parsed data:", data); // دیباگ بیشتر
                 if (data.status === "success") {
                     window.location.href = data.redirect_url || "https://codever-production.up.railway.app/";
+                    console.log("Redirecting to:", data.redirect_url || "https://codever-production.up.railway.app/");
                 } else {
                     alert(data.message || "An error occurred");
+                    console.log("Error response:", data);
                 }
             } catch (error) {
                 console.error("Fetch error:", error);
-                alert("Server error, please try again later");
+                alert(`Server error, please try again later: ${error.message || error}`);
+                console.log("Full error object:", error);
             }
         });
     </script>
