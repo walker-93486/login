@@ -223,7 +223,9 @@
                     body: formData
                 });
                 console.log("Server response status:", response.status); // دیباگ بیشتر
-                console.log("Server response:", await response.text()); // دیباگ بیشتر
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
                 const data = await response.json();
                 console.log("Parsed data:", data); // دیباگ بیشتر
                 if (data.status === "success") {
